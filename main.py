@@ -2,10 +2,12 @@
 # the open-source pygame library
 # throughout this file
 import pygame
+import sys
 from constants import *
 from player import *
 from asteroid import *
 from asteroidfield import *
+from shot import *
 
 def main():
     pygame.init()
@@ -21,9 +23,11 @@ def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
     Player.containers = (updatable, drawable)
     Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = (updatable)
+    Shot.containers = (drawable, updatable, shots)
     player = Player(starting_x, starting_y)
     asteroid_field = AsteroidField()
     
@@ -38,8 +42,13 @@ def main():
             obj.draw(screen)
         for obj in updatable:
             obj.update(dt)
+        for asteroid in asteroids:
+            if asteroid.is_colliding(player):
+                sys.exit("Game over!")
+
+            
         
-        print(f"updatable: {len(updatable)}, drawable: {len(drawable)}")
+        #print(f"updatable: {len(updatable)}, drawable: {len(drawable)}")
 
         pygame.display.flip()
         dt = game_clock.tick(60) / 1000
